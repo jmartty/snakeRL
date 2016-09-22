@@ -16,8 +16,10 @@ class Painter:
         self.clock = clock
         # +1 square for each edge
         self.game_surface = pygame.Surface(( (game.grid.w+2)*SQ_SIZE, (game.grid.h+2)*SQ_SIZE))
+        self.font = pygame.font.SysFont("verdana", 12)
 
     def paint(self):
+        self.screen.fill(BLACK)
         self.game_surface.fill(BLACK)
         self.paintGame()
         pygame.display.update()
@@ -29,6 +31,12 @@ class Painter:
         self.screen.blit(self.game_surface,
             (self.screen.get_width()/2 - self.game_surface.get_width()/2,
             self.screen.get_height()/2 - self.game_surface.get_height()/2))
+        self.paintScore()
+
+    def paintScore(self):
+        score_surface = self.font.render("Score: "+str(self.game.score), True, LGRAY)
+        self.screen.blit(score_surface, (self.screen.get_width()/2 - score_surface.get_width()/2,
+            self.screen.get_height()/2 - self.game_surface.get_height()/2 - score_surface.get_height() - 5))
 
     def paintEdges(self):
         # Left edge
