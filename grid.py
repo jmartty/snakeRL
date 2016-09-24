@@ -92,10 +92,10 @@ class Grid:
         # Join as flattened string
         return ''.join([str(square) for rows in self.squares for square in rows])
 
-    def stringRepSurroundings(self):
+    def stringRepSurroundings(self, vision):
         # Surroundings width (from center)
-        w = 2
-        h = 2
+        w = vision
+        h = vision
         # Player coords
         x = self.playerPosition[0]
         y = self.playerPosition[1]

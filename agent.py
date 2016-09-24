@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import pickle
 
 class ActionHistory:
@@ -13,8 +14,9 @@ class ActionHistory:
 
 class Agent:
 
-    def __init__(self, epsilon, num_actions, file):
+    def __init__(self, epsilon, beta, num_actions, file):
         self.epsilon = epsilon
+        self.beta = beta
         self.q = {}
         self.num_actions = num_actions
         self.last_action = None
@@ -50,20 +52,32 @@ class Agent:
         return s
 
     def newEpisode(self):
-        self.acc_reward = 0
+        self.acc_reward = 1000
         self.step = 0
 
     def lowerEpsilon(self):
-        self.epsilon -= 0.01
-        if(self.epsilon <= 0):
-            self.epsilon = 0
+        self.epsilon -= 1
+        if(self.epsilon <= 1):
+            self.epsilon = 1
         return self.epsilon
 
     def increaseEpsilon(self):
-        self.epsilon += 0.01
-        if(self.epsilon >= 1):
-            self.epsilon = 1
+        self.epsilon += 1
+        if(self.epsilon >= 4):
+            self.epsilon = 4
         return self.epsilon
+
+    def lowerBeta(self):
+        self.beta -= 0.1
+        if(self.beta <= 0):
+            self.beta = 0
+        return self.beta
+
+    def increaseBeta(self):
+        self.beta += 0.1
+        if(self.beta >= 1):
+            self.beta = 1
+        return self.beta
 
     def getQforState(self, state):
         if state not in self.q:
@@ -78,13 +92,17 @@ class Agent:
         q[self.last_action].sample(self.acc_reward)
 
     def nextAction(self, state):
-        if np.random.random() < self.epsilon:
-            # Explore action at random
-            self.last_action = np.random.randint(0, self.num_actions)
-            return self.last_action
+        actions = self.getQforState(state)
+        # Sort by reward
+        positive_action_indices = [i[0] for i in sorted(enumerate(actions), key=lambda x:x[1].mean_reward)][::-1]
+        # Take only positive
+        positive_action_indices = list(filter(lambda x: actions[x].mean_reward >= 0, range(4)))
+        # If there are no positive actions, we've trapped ourselves; pick random
+        if len(positive_action_indices) == 0:
+            positive_action_indices = list(range(4))
+        # Take epsilon elements or all with beta probability
+        if (np.random.random() < self.beta):
+            self.last_action = random.choice(positive_action_indices)
         else:
-            # Exploit best known action at the moment
-            actions = self.getQforState(state)
-            max_val = max([a.mean_reward for a in actions])
-            self.last_action = actions.index(next(a for a in actions if a.mean_reward == max_val))
-            return self.last_action
+            self.last_action = random.choice(positive_action_indices[:self.epsilon])
+        return self.last_action
