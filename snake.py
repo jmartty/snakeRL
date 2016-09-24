@@ -18,7 +18,7 @@ game = Game(WIDTH, HEIGHT)
 screen = pygame.display.set_mode((640, 480))
 painter = Painter(screen, game, clock)
 
-agent = Agent(0.01, 0.05, 0.95, Game.NUM_ACTIONS, None)
+agent = Agent(0.01, 0.01, 1.0, Game.NUM_ACTIONS, 'agent-4-4-2.data')
 
 following = False
 score_ma = MovingAverage(0.001)
@@ -38,10 +38,12 @@ while True:
                 print("Agent e: "+str(agent.increaseEpsilon()))
             if event.key == pygame.K_DOWN:
                 print("Agent e: "+str(agent.lowerEpsilon()))
+            if event.key == pygame.K_RIGHT:
+                print("Agent e: "+str(agent.increaseAlpha()))
+            if event.key == pygame.K_LEFT:
+                print("Agent e: "+str(agent.lowerAlpha()))
             if event.key == pygame.K_s:
                 agent.save()
-            if event.key == pygame.K_p:
-                pygame.time.wait(5000)
             if event.key == pygame.K_ESCAPE:
                 agent.save()
                 sys.exit()
@@ -49,7 +51,7 @@ while True:
     # String rep for current grid
     curr_grid_state = game.grid.stringRepSurroundings(AWARENESS)
     # Get move from agent
-    game.move(agent.nextAction(curr_grid_state))
+    game.move(agent.nextAction(curr_grid_state, game.grid))
     # Update game and pass reward to agent
     agent.sampleStateAction(curr_grid_state, game.update())
 
@@ -75,6 +77,7 @@ while True:
                   +" avg_score: "+f2s(score_ma.mean)
                   +" wins%: "+f2s(wins_ma.mean)
                   +" a.e: "+str(agent.epsilon)
+                  +" a.a: "+f2s(agent.alpha)
                   +" it: "+str(it)
                   +" s: "+str(agent.stateCount()))
             
@@ -89,6 +92,8 @@ while True:
         # Makes sure we find a fruit relatively fast
         if it == WIDTH*HEIGHT*100:
                 agent.epsilon = 0
+        if it % 50000 == 0:
+            agent.save()
         it += 1
 
         score_ma.sample(game.score)

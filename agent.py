@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import random
 import pickle
@@ -51,7 +52,8 @@ class Agent:
         try:
             with open(self.file, 'wb') as f:
                 pickle.dump(self.__dict__, f)
-                print("Saved agent to file")
+                print("Saved agent to file - "+str(int(os.path.getsize(self.file)/(1024*1024)))+"MB")
+
         except EnvironmentError:
             print("Error saving agent to file")
 
@@ -63,6 +65,18 @@ class Agent:
         self.length = 0
         self.prev_state = None
         self.last_action = None
+
+    def lowerAlpha(self):
+        self.alpha -= 0.001
+        if(self.alpha <= 0):
+            self.alpha = 0
+        return self.alpha
+
+    def increaseAlpha(self):
+        self.alpha += 0.001
+        if(self.alpha >= 1):
+            self.alpha = 1
+        return self.alpha
 
     def lowerEpsilon(self):
         self.epsilon -= 0.01
@@ -87,17 +101,21 @@ class Agent:
         self.length += 1 if reward > 0 else 0
         if self.prev_state != None and self.last_action != None:
             qs_prev = self.getQforState(self.prev_state)
+            next_max = self.getQforState(state).getMaxActionValue()
             qs_prev.update(self.last_action,
-                           self.getQforState(state).getMaxActionValue(),
+                           next_max,
                            reward,
                            self.alpha,
                            self.gamma)
 
-    def nextAction(self, state):
+    def nextAction(self, state, grid):
         # Get actions
         qs = self.getQforState(state)
-        # Take random action with epsilon probability or if we dont have any info on the future
-        if self.length == 0 or qs.firstVisit() or (np.random.random() < self.epsilon):
+        # Little boost to get started
+        if self.length < 1 or qs.firstVisit():
+            self.last_action = grid.fruitDirectionActionIdx()
+        # Take random action with epsilon probability
+        elif (np.random.random() < self.epsilon):
             # # Take only positive
             positive_action_indices = list(filter(lambda x: qs.action_values[x] > 0, range(self.num_actions)))
             # If there are no positive action values, we've trapped ourselves; pick random

@@ -126,9 +126,23 @@ class Grid:
 
         # Add "normalized" fruit direction
         direct = [self.fruitPosition[0]-self.playerPosition[0],
-               self.fruitPosition[1]-self.playerPosition[1]]
+                  self.fruitPosition[1]-self.playerPosition[1]]
         direct[0] = direct[0]/np.abs(direct[0]) if direct[0] != 0 else 0
         direct[1] = direct[1]/np.abs(direct[1]) if direct[1] != 0 else 0
         self.squares.extend([direct])
         # Join as flattened string
         return ''.join([str(square) for rows in self.squares for square in rows])
+
+    def fruitDirectionActionIdx(self):
+        direct = [self.fruitPosition[0]-self.playerPosition[0],
+                  self.fruitPosition[1]-self.playerPosition[1]]
+        if direct[0] > 0:
+            return game.Game.MOVE_RIGHT
+        elif direct[0] < 0:
+            return game.Game.MOVE_LEFT
+        elif direct[1] > 0:
+            return game.Game.MOVE_DOWN
+        elif direct[1] < 0:
+            return game.Game.MOVE_UP
+        else:
+            return random.randint(0, game.Game.NUM_ACTIONS-1)
