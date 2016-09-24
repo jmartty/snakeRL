@@ -1,3 +1,4 @@
+import numpy as np
 import copy
 import random
 import game
@@ -74,11 +75,11 @@ class Grid:
     PLAYER = 1
     BODY = 2
     FRUIT = 3
+    WALL = 4
 
     def stringRep(self):
         # Init all blank
         self.squares = [[Grid.EMPTY for _ in range(self.h)] for _ in range(self.w)]
-        print(self.squares)
         # Replace fruit square
         self.squares[self.fruitPosition[0]][self.fruitPosition[1]] = Grid.FRUIT
         # Replace player squares
@@ -88,5 +89,46 @@ class Grid:
         for prev in self.playerPreviousPositions:
             self.squares[prev[0]][prev[1]] = Grid.BODY
 
+        # Join as flattened string
+        return ''.join([str(square) for rows in self.squares for square in rows])
+
+    def stringRepSurroundings(self):
+        # Surroundings width (from center)
+        w = 2
+        h = 2
+        # Player coords
+        x = self.playerPosition[0]
+        y = self.playerPosition[1]
+        # Init all blank
+        self.squares = [[Grid.EMPTY for _ in range(w*2+1)] for _ in range(h*2+1)]
+        # Head
+        self.squares[w][h] = Grid.PLAYER
+        # Tail
+        for prev in self.playerPreviousPositions:
+            if np.abs(prev[0] - x) <= w and np.abs(prev[1] - y) <= h:
+                self.squares[prev[0]-x+w][prev[1]-y+h] = Grid.BODY
+        # Replace fruit square
+        if np.abs(self.fruitPosition[0] - x) <= w and np.abs(self.fruitPosition[1] - y) <= h:
+            self.squares[self.fruitPosition[0]-x+w][self.fruitPosition[1]-y+h] = Grid.FRUIT
+        # Place walls
+        if x < w:
+            for j in range(w*2+1):
+                self.squares[w-1-x][j] = Grid.WALL
+        if x > self.w-1-w:
+            for j in range(w*2+1):
+                self.squares[w+self.w-x][j] = Grid.WALL
+        if y < h:
+            for i in range(h*2+1):
+                self.squares[i][h-1-y] = Grid.WALL
+        if y > self.h-1-h:
+            for i in range(h*2+1):
+                self.squares[i][h+self.h-y] = Grid.WALL
+
+        # Add "normalized" fruit direction
+        direct = [self.fruitPosition[0]-self.playerPosition[0],
+               self.fruitPosition[1]-self.playerPosition[1]]
+        direct[0] = direct[0]/np.abs(direct[0]) if direct[0] != 0 else 0
+        direct[1] = direct[1]/np.abs(direct[1]) if direct[1] != 0 else 0
+        self.squares.extend([direct])
         # Join as flattened string
         return ''.join([str(square) for rows in self.squares for square in rows])

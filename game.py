@@ -1,4 +1,5 @@
 from grid import *
+from agent import *
 
 class Game:
 
@@ -12,6 +13,7 @@ class Game:
     MOVE_DOWN = 1
     MOVE_LEFT = 2
     MOVE_RIGHT = 3
+    NUM_ACTIONS = 4
 
     def __init__(self, w, h):
         # Grid to hold the map
@@ -25,19 +27,24 @@ class Game:
         self.score = 0
 
     def update(self):
-        # Process next move
+        # Process next move and return reward
         if self.nextMove != None:
             res = self.grid.doMove(self.nextMove)
             if res == Grid.MOVE_OK:
                 # Do nothing
-                pass
+                reward = -1e1
             elif res == Grid.MOVE_SCORE:
                 self.score += 1
+                reward = 1e2
             elif res == Grid.MOVE_FAIL:
                 self.state = Game.LOST
+                reward = -1e6
             elif res == Grid.MOVE_WIN:
+                self.score += 1
                 self.state = Game.WON
+                reward = 1e3
             self.nextMove = None
+            return reward
 
     def move(self, move):
         self.nextMove = move
