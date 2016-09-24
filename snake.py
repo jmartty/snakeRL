@@ -1,3 +1,4 @@
+from pprint import pprint
 import pickle
 import random
 import pygame
@@ -17,11 +18,11 @@ game = Game(WIDTH, HEIGHT)
 screen = pygame.display.set_mode((640, 480))
 painter = Painter(screen, game, clock)
 
-agent = Agent(3, 0.9, Game.NUM_ACTIONS, None)
+agent = Agent(0.01, 0.05, 0.95, Game.NUM_ACTIONS, None)
 
 following = False
 score_ma = MovingAverage(0.001)
-wins_ma = MovingAverage(0.1)
+wins_ma = MovingAverage(0.01)
 it = 0
 
 while True:
@@ -37,10 +38,6 @@ while True:
                 print("Agent e: "+str(agent.increaseEpsilon()))
             if event.key == pygame.K_DOWN:
                 print("Agent e: "+str(agent.lowerEpsilon()))
-            if event.key == pygame.K_LEFT:
-                print("Agent b: "+f2s(agent.lowerBeta()))
-            if event.key == pygame.K_RIGHT:
-                print("Agent b: "+f2s(agent.increaseBeta()))
             if event.key == pygame.K_s:
                 agent.save()
             if event.key == pygame.K_p:
@@ -56,6 +53,10 @@ while True:
     # Update game and pass reward to agent
     agent.sampleStateAction(curr_grid_state, game.update())
 
+    # for k,v in agent.q.items():
+    #     print(k + str(v.action_values))
+    # print("------")
+
     # Drawing
     if following:
         painter.paint()
@@ -69,16 +70,13 @@ while True:
         elif game.state == Game.LOST:
             wins_ma.sample(0)
 
-        if following or it % 500 == 0:
-    
+        if following or it % 500 == 0:            
             print("avg_target%: "+f2s((score_ma.mean*100/((WIDTH*HEIGHT)-1)))
                   +" avg_score: "+f2s(score_ma.mean)
                   +" wins%: "+f2s(wins_ma.mean)
                   +" a.e: "+str(agent.epsilon)
-                  +" a.b: "+f2s(agent.beta)
                   +" it: "+str(it)
-                  +" s: "+str(agent.stateCount())
-                  +" s+a: "+str(agent.stateActionCount()))
+                  +" s: "+str(agent.stateCount()))
             
             if following:
                 if game.state == Game.WON:
@@ -87,7 +85,12 @@ while True:
                     print("Game-over!")
                 pygame.time.wait(1500)
         
+        # Hardcoded threshold to make sure we explore at first
+        # Makes sure we find a fruit relatively fast
+        if it == WIDTH*HEIGHT*100:
+                agent.epsilon = 0
         it += 1
+
         score_ma.sample(game.score)
         
         game.startNew()

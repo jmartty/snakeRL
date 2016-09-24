@@ -77,7 +77,7 @@ class Grid:
     FRUIT = 3
     WALL = 4
 
-    def stringRep(self):
+    def stringRepFull(self):
         # Init all blank
         self.squares = [[Grid.EMPTY for _ in range(self.h)] for _ in range(self.w)]
         # Replace fruit square

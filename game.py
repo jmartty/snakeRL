@@ -32,17 +32,17 @@ class Game:
             res = self.grid.doMove(self.nextMove)
             if res == Grid.MOVE_OK:
                 # Do nothing
-                reward = -0.1
+                reward = -1
             elif res == Grid.MOVE_SCORE:
                 self.score += 1
-                reward = 1e2
+                reward = 10
             elif res == Grid.MOVE_FAIL:
                 self.state = Game.LOST
-                reward = -1e6
+                reward = -100
             elif res == Grid.MOVE_WIN:
                 self.score += 1
                 self.state = Game.WON
-                reward = 1e3
+                reward = 100000
             self.nextMove = None
             return reward
 
