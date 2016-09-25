@@ -22,7 +22,7 @@ agent = Agent(epsilon=0.05, alpha=0.01, gamma=1.0, num_actions=Game.NUM_ACTIONS,
 
 following = False
 score_ma = MovingAverage(0.001)
-wins_ma = MovingAverage(0.01)
+wins_ma = MovingAverage(0.001)
 it = 0
 
 while True:
