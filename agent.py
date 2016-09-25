@@ -16,8 +16,12 @@ class QState:
         return max(self.action_values)
 
     def getArgMaxActionValue(self):
-        idx = [i[0] for i in sorted(enumerate(self.action_values), key=lambda x:x[1])]
-        return idx[-1]
+        m = self.getMaxActionValue()
+        idx = [i for i, v in enumerate(self.action_values) if v == m]
+        if len(idx) == 1:
+            return idx[0]
+        else:
+            return random.choice(idx)
 
     def firstVisit(self):
         return self.new
