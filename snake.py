@@ -18,7 +18,7 @@ game = Game(WIDTH, HEIGHT)
 screen = pygame.display.set_mode((640, 480))
 painter = Painter(screen, game, clock)
 
-agent = Agent(0.01, 0.01, 1.0, Game.NUM_ACTIONS, 'agent-4-4-2.data')
+agent = Agent(0.01, 0.01, 1.0, Game.NUM_ACTIONS, None)
 
 following = False
 score_ma = MovingAverage(0.001)
@@ -39,9 +39,9 @@ while True:
             if event.key == pygame.K_DOWN:
                 print("Agent e: "+str(agent.lowerEpsilon()))
             if event.key == pygame.K_RIGHT:
-                print("Agent e: "+str(agent.increaseAlpha()))
+                print("Agent a: "+str(agent.increaseAlpha()))
             if event.key == pygame.K_LEFT:
-                print("Agent e: "+str(agent.lowerAlpha()))
+                print("Agent a: "+str(agent.lowerAlpha()))
             if event.key == pygame.K_s:
                 agent.save()
             if event.key == pygame.K_ESCAPE:
@@ -54,10 +54,6 @@ while True:
     game.move(agent.nextAction(curr_grid_state, game.grid))
     # Update game and pass reward to agent
     agent.sampleStateAction(curr_grid_state, game.update())
-
-    # for k,v in agent.q.items():
-    #     print(k + str(v.action_values))
-    # print("------")
 
     # Drawing
     if following:
