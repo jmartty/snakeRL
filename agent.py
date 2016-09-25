@@ -3,7 +3,7 @@ import numpy as np
 import random
 import pickle
 
-QSTATE_ACTION_VALUE_INITIAL = 16
+QSTATE_ACTION_VALUE_INITIAL = 1
 
 class QState:
 
@@ -101,8 +101,14 @@ class Agent:
         return self.q[state]
 
     def sampleStateAction(self, state, reward):
+        # Update epsilon
         self.step += 1
+        if self.epsilon > 0:
+            self.epsilon = self.epsilon * 0.99999
+            if self.epsilon < 1e-5: self.epsilon = 0
+        # Keep track of length
         self.length += 1 if reward > 0 else 0
+        # Q update
         if self.prev_state != None and self.last_action != None:
             qs_prev = self.getQforState(self.prev_state)
             next_max = self.getQforState(state).getMaxActionValue()
@@ -119,7 +125,7 @@ class Agent:
         if self.length < 1 or qs.firstVisit():
             self.last_action = grid.fruitDirectionActionIdx()
         # Take random action with epsilon probability
-        elif (np.random.random() < self.epsilon):
+        elif self.epsilon > 0 and np.random.random() < self.epsilon:
             # # Take only positive
             positive_action_indices = list(filter(lambda x: qs.action_values[x] > 0, range(self.num_actions)))
             # If there are no positive action values, we've trapped ourselves; pick random

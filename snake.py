@@ -10,7 +10,7 @@ from utils import *
 # Grid dimensions
 WIDTH = 3
 HEIGHT = 4
-AWARENESS = 2
+VISION = 1
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -18,7 +18,7 @@ game = Game(WIDTH, HEIGHT)
 screen = pygame.display.set_mode((640, 480))
 painter = Painter(screen, game, clock)
 
-agent = Agent(0.01, 0.01, 1.0, Game.NUM_ACTIONS, None)
+agent = Agent(0.05, 0.01, 1.0, Game.NUM_ACTIONS, None)
 
 following = False
 score_ma = MovingAverage(0.001)
@@ -49,7 +49,7 @@ while True:
                 sys.exit()
 
     # String rep for current grid
-    curr_grid_state = game.grid.stringRepSurroundings(AWARENESS)
+    curr_grid_state = game.grid.stringRepSurroundings(VISION)
     # Get move from agent
     game.move(agent.nextAction(curr_grid_state, game.grid))
     # Update game and pass reward to agent
@@ -72,22 +72,14 @@ while True:
             print("avg_target%: "+f2s((score_ma.mean*100/((WIDTH*HEIGHT)-1)))
                   +" avg_score: "+f2s(score_ma.mean)
                   +" wins%: "+f2s(wins_ma.mean)
-                  +" a.e: "+str(agent.epsilon)
+                  +" a.e: "+f2s(agent.epsilon, '4')
                   +" a.a: "+f2s(agent.alpha)
                   +" it: "+str(it)
                   +" s: "+str(agent.stateCount()))
             
             if following:
-                if game.state == Game.WON:
-                    print("You win!")
-                elif game.state == Game.LOST:
-                    print("Game-over!")
                 pygame.time.wait(1500)
         
-        # Hardcoded threshold to make sure we explore at first
-        # Makes sure we find a fruit relatively fast
-        if it == WIDTH*HEIGHT*100:
-                agent.epsilon = 0
         if it % 50000 == 0:
             agent.save()
         it += 1

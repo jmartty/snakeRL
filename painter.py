@@ -1,4 +1,5 @@
 import pygame
+from game import *
 
 SQ_SIZE = 12
 BLACK = (24 , 24 , 24 )
@@ -32,11 +33,26 @@ class Painter:
             (self.screen.get_width()/2 - self.game_surface.get_width()/2,
             self.screen.get_height()/2 - self.game_surface.get_height()/2))
         self.paintScore()
+        self.paintResult()
 
     def paintScore(self):
         score_surface = self.font.render("Score: "+str(self.game.score), True, LGRAY)
-        self.screen.blit(score_surface, (self.screen.get_width()/2 - score_surface.get_width()/2,
+        self.screen.blit(score_surface,
+            (self.screen.get_width()/2 - score_surface.get_width()/2,
             self.screen.get_height()/2 - self.game_surface.get_height()/2 - score_surface.get_height() - 5))
+
+    def paintResult(self):
+        if self.game.isGameOver():
+            outcome = None
+            if self.game.state == Game.WON:
+                outcome = "You win!"
+            elif self.game.state == Game.LOST:
+                outcome = "Game-over!"
+
+            result_surface = self.font.render(outcome, True, LGRAY)
+            self.screen.blit(result_surface,
+                (self.screen.get_width()/2 - result_surface.get_width()/2,
+                self.screen.get_height()/2 + self.game_surface.get_height()/2 + result_surface.get_height() - 5))
 
     def paintEdges(self):
         # Left edge

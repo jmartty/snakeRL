@@ -93,6 +93,7 @@ class Grid:
         return ''.join([str(square) for rows in self.squares for square in rows])
 
     def stringRepSurroundings(self, vision):
+        if vision == 0: return self.stringRepFull()
         # Surroundings width (from center)
         w = vision
         h = vision

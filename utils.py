@@ -7,5 +7,5 @@ class MovingAverage:
     def sample(self, value):
         self.mean += self.rate*(value - self.mean)
 
-def f2s(f):
-    return "{0:.2f}".format(f)
+def f2s(f, dec='2'):
+    return ("{0:."+dec+"f}").format(f)
