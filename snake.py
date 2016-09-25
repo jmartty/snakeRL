@@ -8,7 +8,7 @@ from painter import *
 from utils import *
 
 # Grid dimensions
-WIDTH = 4
+WIDTH = 3
 HEIGHT = 4
 AWARENESS = 2
 

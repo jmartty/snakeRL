@@ -38,11 +38,11 @@ class Game:
                 reward = +10
             elif res == Grid.MOVE_FAIL:
                 self.state = Game.LOST
-                reward = -100
+                reward = -1000
             elif res == Grid.MOVE_WIN:
                 self.score += 1
                 self.state = Game.WON
-                reward = 100
+                reward = +1000
             self.nextMove = None
             return reward
 

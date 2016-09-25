@@ -1,11 +1,11 @@
 import pygame
 
 SQ_SIZE = 12
-BLACK = (24,24,24)
-WHITE = (225,225,225)
-LGRAY = (175,175,175)
-GRAY = (128,128,128)
-RED = (200, 0, 0)
+BLACK = (24 , 24 , 24 )
+WHITE = (225, 225, 225)
+LGRAY = (175, 175, 175)
+GRAY  = (125, 125, 125)
+RED   = (200, 0  , 0  )
 
 class Painter:
 
@@ -59,8 +59,13 @@ class Painter:
         # Paint player and tail
         pp = self.game.grid.playerPosition
         self.game_surface.fill(WHITE, pygame.Rect(self.logic2pixels(pp), (SQ_SIZE,SQ_SIZE)))
+        tail_size = len(self.game.grid.playerPreviousPositions)
+        i = 1
         for tail_part in self.game.grid.playerPreviousPositions:
-            self.game_surface.fill(LGRAY, pygame.Rect(self.logic2pixels(tail_part), (SQ_SIZE,SQ_SIZE)))
+            scale = 0.75 + 0.25*i/tail_size
+            color = (LGRAY[0]*scale,)*3
+            self.game_surface.fill(color, pygame.Rect(self.logic2pixels(tail_part), (SQ_SIZE,SQ_SIZE)))
+            i += 1
 
     def logic2pixels(self, pos):
         return (SQ_SIZE*(pos[0]+1),SQ_SIZE*(pos[1]+1))
