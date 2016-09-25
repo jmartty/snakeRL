@@ -28,7 +28,7 @@ class QState:
 
     def update(self, action, next_state_max, reward, alpha, gamma):
         if self.new: self.new = False
-        self.action_values[action] += alpha * (reward + gamma*next_state_max - self.action_values[action])
+        self.action_values[action] += alpha * (reward + (gamma*next_state_max) - self.action_values[action])
 
 class Agent:
 
@@ -122,7 +122,7 @@ class Agent:
         # Get actions
         qs = self.getQforState(state)
         # Little boost to get started
-        if self.length < 1 or qs.firstVisit():
+        if self.length == 0 or qs.firstVisit():
             self.last_action = grid.fruitDirectionActionIdx()
         # Take random action with epsilon probability
         elif self.epsilon > 0 and np.random.random() < self.epsilon:

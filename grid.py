@@ -149,4 +149,5 @@ class Grid:
         elif direct[1] < 0:
             return game.Game.MOVE_UP
         else:
-            return random.randint(0, game.Game.NUM_ACTIONS-1)
+            # Should never land here
+            return None

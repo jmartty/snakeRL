@@ -18,7 +18,7 @@ game = Game(WIDTH, HEIGHT)
 screen = pygame.display.set_mode((640, 480))
 painter = Painter(screen, game, clock)
 
-agent = Agent(0.05, 0.01, 1.0, Game.NUM_ACTIONS, None)
+agent = Agent(epsilon=0.05, alpha=0.01, gamma=1.0, num_actions=Game.NUM_ACTIONS, file=None)
 
 following = False
 score_ma = MovingAverage(0.001)
