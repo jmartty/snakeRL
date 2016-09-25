@@ -127,10 +127,10 @@ class Agent:
         # Take random action with epsilon probability
         elif self.epsilon > 0 and np.random.random() < self.epsilon:
             # # Take only positive
-            positive_action_indices = list(filter(lambda x: qs.action_values[x] > 0, range(self.num_actions)))
-            # If there are no positive action values, we've trapped ourselves; pick random
-            if len(positive_action_indices) == 0:
-                positive_action_indices = list(range(self.num_actions))
+            # positive_action_indices = list(filter(lambda x: qs.action_values[x] > 0, range(self.num_actions)))
+            # # If there are no positive action values, we've trapped ourselves; pick random
+            # if len(positive_action_indices) == 0:
+            positive_action_indices = list(range(self.num_actions))
             self.last_action = random.choice(positive_action_indices)
         else:
             # Sort by reward

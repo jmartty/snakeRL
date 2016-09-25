@@ -73,9 +73,9 @@ class Grid:
     # Grid slots
     EMPTY = 0
     PLAYER = 1
-    BODY = 2
+    WALL = 2
     FRUIT = 3
-    WALL = 4
+    BODY = 4
 
     def stringRepFull(self):
         # Init all blank
@@ -87,7 +87,7 @@ class Grid:
         self.squares[self.playerPosition[0]][self.playerPosition[1]] = Grid.PLAYER
         # Tail
         for prev in self.playerPreviousPositions:
-            self.squares[prev[0]][prev[1]] = Grid.BODY
+            self.squares[prev[0]][prev[1]] = Grid.BODY + self.tailLength()
 
         # Join as flattened string
         return ''.join([str(square) for rows in self.squares for square in rows])
@@ -107,7 +107,7 @@ class Grid:
         # Tail
         for prev in self.playerPreviousPositions:
             if np.abs(prev[0] - x) <= w and np.abs(prev[1] - y) <= h:
-                self.squares[prev[0]-x+w][prev[1]-y+h] = Grid.BODY
+                self.squares[prev[0]-x+w][prev[1]-y+h] = Grid.BODY + self.tailLength()
         # Replace fruit square
         if np.abs(self.fruitPosition[0] - x) <= w and np.abs(self.fruitPosition[1] - y) <= h:
             self.squares[self.fruitPosition[0]-x+w][self.fruitPosition[1]-y+h] = Grid.FRUIT
@@ -133,6 +133,9 @@ class Grid:
         self.squares.extend([direct])
         # Join as flattened string
         return ''.join([str(square) for rows in self.squares for square in rows])
+
+    def tailLength(self):
+        return len(self.playerPreviousPositions)
 
     def fruitDirectionActionIdx(self):
         direct = [self.fruitPosition[0]-self.playerPosition[0],

@@ -8,9 +8,9 @@ from painter import *
 from utils import *
 
 # Grid dimensions
-WIDTH = 3
-HEIGHT = 4
-VISION = 1
+WIDTH = 4
+HEIGHT = 3
+VISION = 2
 
 pygame.init()
 clock = pygame.time.Clock()
