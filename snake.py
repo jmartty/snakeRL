@@ -8,7 +8,7 @@ from painter import *
 from utils import *
 
 # Grid dimensions
-WIDTH = 2
+WIDTH = 4
 HEIGHT = 3
 VISION = 0
 
@@ -18,11 +18,12 @@ game = Game(WIDTH, HEIGHT)
 screen = pygame.display.set_mode((640, 480))
 painter = Painter(screen, game, clock)
 
-agent = Agent(epsilon=0.05, alpha=0.01, gamma=1.0, num_actions=Game.NUM_ACTIONS, file=None)
+agent = Agent(epsilon=0.1, alpha=0.1, gamma=1.0, num_actions=Game.NUM_ACTIONS, file=None)
 
 following = False
 score_ma = MovingAverage(0.001)
 wins_ma = MovingAverage(0.001)
+steps_ma = MovingAverage(0.0001)
 it = 0
 
 while True:
@@ -48,21 +49,22 @@ while True:
                 agent.save()
                 sys.exit()
 
-    # String rep for current grid
-    curr_grid_state = game.grid.stringRepSurroundings(VISION)
-    # Get move from agent
-    game.move(agent.nextAction(curr_grid_state, game.grid))
+    # Get move from agent and perform it
+    game.move(agent.nextAction(game.getState(VISION), game.grid))
     # Update game and pass reward to agent
-    agent.sampleStateAction(curr_grid_state, game.update())
+    reward = game.update()
+    # Resample state
+    agent.sampleStateAction(game.getState(VISION), reward)
 
     # Drawing
     if following:
         painter.paint()
-        pygame.time.wait(150)
+        pygame.time.wait(200)
 
     # End game logic
     if game.isGameOver():
 
+        # Stats keeping
         if game.state == Game.WON:
             wins_ma.sample(100)
         elif game.state == Game.LOST:
@@ -72,10 +74,11 @@ while True:
             print("avg_target%: "+f2s((score_ma.mean*100/((WIDTH*HEIGHT)-1)))
                   +" avg_score: "+f2s(score_ma.mean)
                   +" wins%: "+f2s(wins_ma.mean)
-                  +" a.e: "+f2s(agent.epsilon, '4')
-                  +" a.a: "+f2s(agent.alpha)
+                  +" avg_steps: "+f2s(steps_ma.mean)
+                  +" a.e: "+f2s(agent.epsilon, '6')
+                  +" a.a: "+f2s(agent.alpha, '6')
                   +" it: "+str(it)
-                  +" s: "+str(agent.stateCount()))
+                  +" states: "+str(agent.stateCount()))
             
             if following:
                 pygame.time.wait(1500)
@@ -85,6 +88,8 @@ while True:
         it += 1
 
         score_ma.sample(game.score)
+        steps_ma.sample(agent.step)
         
+        # Reset game and restart agent
         game.startNew()
         agent.newEpisode()

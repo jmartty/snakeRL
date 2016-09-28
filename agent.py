@@ -2,6 +2,7 @@ import os
 import numpy as np
 import random
 import pickle
+import game
 
 QSTATE_ACTION_VALUE_INITIAL = 1
 
@@ -106,6 +107,8 @@ class Agent:
         if self.epsilon > 0:
             self.epsilon = self.epsilon * 0.99999
             if self.epsilon < 1e-5: self.epsilon = 0
+        if self.alpha > 0:
+            self.alpha = self.alpha * 0.999995
         # Keep track of length
         self.length += 1 if reward > 0 else 0
         # Q update
@@ -117,6 +120,8 @@ class Agent:
                            reward,
                            self.alpha,
                            self.gamma)
+        # Update latest state
+        self.prev_state = state
 
     def nextAction(self, state, grid):
         # Get actions
@@ -136,5 +141,4 @@ class Agent:
             # Sort by reward
             self.last_action = qs.getArgMaxActionValue()
 
-        self.prev_state = state
         return self.last_action

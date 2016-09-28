@@ -72,9 +72,9 @@ class Grid:
 
     # Grid slots
     EMPTY = 0
-    PLAYER = 1
+    FRUIT = 1
     WALL = 2
-    FRUIT = 3
+    PLAYER = 3
     BODY = 4
 
     def stringRepFull(self):
@@ -86,8 +86,10 @@ class Grid:
         # Head
         self.squares[self.playerPosition[0]][self.playerPosition[1]] = Grid.PLAYER
         # Tail
-        for prev in self.playerPreviousPositions:
-            self.squares[prev[0]][prev[1]] = Grid.BODY + self.tailLength()
+        i = 0
+        for prev in reversed(self.playerPreviousPositions):
+            self.squares[prev[0]][prev[1]] = Grid.BODY + i
+            i += 1
 
         # Join as flattened string
         return ''.join([str(square) for rows in self.squares for square in rows])
@@ -105,9 +107,11 @@ class Grid:
         # Head
         self.squares[w][h] = Grid.PLAYER
         # Tail
-        for prev in self.playerPreviousPositions:
+        i = 0
+        for prev in reversed(self.playerPreviousPositions):
             if np.abs(prev[0] - x) <= w and np.abs(prev[1] - y) <= h:
-                self.squares[prev[0]-x+w][prev[1]-y+h] = Grid.BODY + self.tailLength()
+                self.squares[prev[0]-x+w][prev[1]-y+h] = Grid.BODY + i
+            i += 1
         # Replace fruit square
         if np.abs(self.fruitPosition[0] - x) <= w and np.abs(self.fruitPosition[1] - y) <= h:
             self.squares[self.fruitPosition[0]-x+w][self.fruitPosition[1]-y+h] = Grid.FRUIT
