@@ -22,7 +22,8 @@ class QState:
         if len(idx) == 1:
             return idx[0]
         else:
-            return random.choice(idx)
+            idx.sort()
+            return idx[0]
 
     def firstVisit(self):
         return self.new
