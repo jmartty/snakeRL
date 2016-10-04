@@ -30,7 +30,8 @@ class QState:
 
     def update(self, action, next_state_max, reward, alpha, gamma):
         if self.new: self.new = False
-        self.action_values[action] += alpha * (reward + (gamma*next_state_max) - self.action_values[action])
+        delta = reward + (gamma*next_state_max) - self.action_values[action]
+        self.action_values[action] += alpha * delta
 
 class Agent:
 
