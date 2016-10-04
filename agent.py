@@ -4,7 +4,7 @@ import random
 import pickle
 import game
 
-QSTATE_ACTION_VALUE_INITIAL = 1
+QSTATE_ACTION_VALUE_INITIAL = 1000000
 
 class QState:
 
@@ -74,13 +74,13 @@ class Agent:
         self.last_action = None
 
     def lowerAlpha(self):
-        self.alpha -= 0.001
+        self.alpha -= 0.01
         if(self.alpha <= 0):
             self.alpha = 0
         return self.alpha
 
     def increaseAlpha(self):
-        self.alpha += 0.001
+        self.alpha += 0.01
         if(self.alpha >= 1):
             self.alpha = 1
         return self.alpha
@@ -106,11 +106,11 @@ class Agent:
     def sampleStateAction(self, state, reward):
         # Update epsilon
         self.step += 1
-        if self.epsilon > 0:
-            self.epsilon = self.epsilon * 0.99999
-            if self.epsilon < 1e-5: self.epsilon = 0
-        if self.alpha > 0:
-            self.alpha = self.alpha * 0.999995
+        # if self.epsilon > 0:
+        #     self.epsilon = self.epsilon * 0.99999
+        #     if self.epsilon < 1e-5: self.epsilon = 0
+        # if self.alpha > 0:
+        #     self.alpha = self.alpha * 0.999995
         # Keep track of length
         self.length += 1 if reward > 0 else 0
         # Q update

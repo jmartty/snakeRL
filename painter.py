@@ -1,7 +1,7 @@
 import pygame
 from game import *
 
-SQ_SIZE = 12
+SQ_SIZE = 16
 BLACK = (24 , 24 , 24 )
 WHITE = (225, 225, 225)
 LGRAY = (175, 175, 175)
