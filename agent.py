@@ -129,7 +129,7 @@ class Agent:
         # Get actions
         qs = self.getQforState(state)
         # Little boost to get started
-        if self.length == 0 or qs.firstVisit():
+        if self.length == 0 and qs.firstVisit():
             self.last_action = grid.fruitDirectionActionIdx()
         # Take random action with epsilon probability
         elif self.epsilon > 0 and np.random.random() < self.epsilon:
